@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación - Neko's Seduction</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Define la fuente Inter y un fondo blanco para el cuerpo */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f2f5; /* Fondo blanco suave */
+            color: #333; /* Color de texto oscuro */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Estilos específicos para el sidebar */
+        .sidebar {
+            width: 280px; /* Ancho fijo del sidebar */
+            background-color: #ffffff;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 1.5rem;
+            flex-shrink: 0;
+            transition: transform 0.3s ease-in-out;
+            position: fixed; /* Fijo para que no se mueva con el scroll */
+            height: 100vh; /* Ocupa toda la altura de la ventana */
+            overflow-y: auto; /* Permite scroll si hay muchos elementos */
+            z-index: 50; /* Asegura que esté por encima del contenido */
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.75rem; /* rounded-lg */
+            font-weight: 500; /* Medium font */
+            color: #4a5568; /* Gray-700 */
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .sidebar-item:hover {
+            background-color: #edf2f7; /* Gray-100 */
+            color: #2d3748; /* Gray-800 */
+            transform: translateX(5px);
+        }
+        .sidebar-item.active {
+            background-color: #e2e8f0; /* Gray-200 */
+            color: #4c1d95; /* Purple-800 */
+            font-weight: 700; /* Bold */
+            box-shadow: inset 3px 0 0 #6d28d9; /* Borde izquierdo morado */
+        }
+
+        /* Contenedor principal del contenido */
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            margin-left: 280px; /* Margen para dejar espacio al sidebar */
+            transition: margin-left 0.3s ease-in-out;
+            background-color: #f0f2f5;
+        }
+
+        /* Estilo para las secciones de documentación */
+        .doc-section {
+            background-color: #ffffff;
+            border-radius: 1rem; /* rounded-xl */
+            padding: 2.5rem; /* p-10 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2.5rem; /* mb-10 */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .doc-section.active-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .doc-section h2 {
+            font-size: 2.5rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 1.5rem; /* mb-6 */
+            color: #4c1d95; /* Purple */
+            border-bottom: 2px solid #e2e8f0; /* Gray-200 */
+            padding-bottom: 1rem;
+        }
+        .doc-section h3 {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            margin-top: 2rem; /* mt-8 */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #333;
+        }
+        .doc-section p {
+            line-height: 1.8; /* leading-relaxed */
+            margin-bottom: 1.25rem; /* mb-5 */
+            color: #4a5568; /* Gray-700 */
+        }
+        .doc-section ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+            color: #4a5568;
+        }
+        .doc-section li {
+            margin-bottom: 0.5rem;
+        }
+        .doc-section a {
+            color: #3b82f6; /* Blue */
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        .doc-section a:hover {
+            color: #2563eb; /* Darker blue */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static; /* No fijo en móviles */
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                transform: translateX(0); /* Asegura que siempre sea visible */
+                padding: 1rem;
+            }
+            .content-area {
+                margin-left: 0; /* Sin margen en móviles */
+                padding: 1.5rem;
+            }
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            .sidebar-item {
+                flex: 1 1 auto; /* Permite que los ítems se ajusten */
+                text-align: center;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .doc-section {
+                padding: 1.5rem;
+            }
+            .doc-section h2 {
+                font-size: 1.8rem;
+                text-align: left;
+            }
+            .doc-section h3 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body class="flex">
+
+    <!-- Sidebar de navegación -->
+    <aside class="sidebar">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">Documentación</h1>
+        <nav class="sidebar-nav">
+            <div class="sidebar-item active" data-target="desarrolladores">
+                <i class="fas fa-code mr-3 text-lg"></i>
+                <span>Desarrolladores</span>
+            </div>
+            <div class="sidebar-item" data-target="dmca">
+                <i class="fas fa-gavel mr-3 text-lg"></i>
+                <span>DMCA</span>
+            </div>
+            <div class="sidebar-item" data-target="nekoservicesclub">
+                <i class="fas fa-gem mr-3 text-lg"></i>
+                <span>NekoServicesClub</span>
+            </div>
+            <div class="sidebar-item" data-target="terminos">
+                <i class="fas fa-file-contract mr-3 text-lg"></i>
+                <span>Términos y Condiciones</span>
+            </div>
+            <div class="sidebar-item" data-target="privacidad">
+                <i class="fas fa-shield-alt mr-3 text-lg"></i>
+                <span>Política de Privacidad</span>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Área de contenido principal -->
+    <main class="content-area">
+        <section id="desarrolladores" class="doc-section active-content">
+            <h2>Documentación de Desarrolladores</h2>
+            <p>Bienvenidos a la sección de documentación para desarrolladores de Neko's Seduction. Aquí encontrarás toda la información necesaria para interactuar con nuestras APIs, contribuir al proyecto y entender la arquitectura de nuestra plataforma. Nuestro objetivo es proporcionar herramientas robustas y bien documentadas para que puedas integrar y extender nuestras funcionalidades de manera eficiente.</p>
+            <h3>APIs y Endpoints</h3>
+            <p>Nuestra plataforma expone varias APIs RESTful para el consumo de contenido, gestión de usuarios (bajo estrictas políticas de privacidad y seguridad), y servicios de interacción. Toda la comunicación se realiza a través de HTTPS con autenticación basada en tokens JWT.</p>
+            <ul>
+                <li><code>/api/v1/content</code>: Para la búsqueda y recuperación de contenido.</li>
+                <li><code>/api/v1/users</code>: Gestión de perfiles de usuario (requiere autenticación avanzada).</li>
+                <li><code>/api/v1/integrations</code>: Puntos de conexión para servicios de terceros.</li>
+            </ul>
+            <h3>Contribución al Código Base</h3>
+            <p>Agradecemos las contribuciones de la comunidad. Nuestro código base está alojado en un repositorio privado de BitBucket, y aceptamos solicitudes de pull después de una revisión exhaustiva. Nos enfocamos en las mejores prácticas de desarrollo, código limpio y pruebas unitarias.</p>
+            <h3>Guías de Integración</h3>
+            <p>Se proporcionarán guías detalladas para integrar bots, herramientas de análisis y otros servicios con Neko's Seduction, asegurando una experiencia fluida y segura.</p>
+        </section>
+
+        <section id="dmca" class="doc-section hidden">
+            <h2>DMCA - Digital Millennium Copyright Act</h2>
+            <p>Neko's Seduction respeta los derechos de propiedad intelectual de terceros y cumple con las disposiciones de la Digital Millennium Copyright Act (DMCA) de 1998. Nuestra política es responder a las notificaciones claras de supuestas infracciones de derechos de autor que cumplan con la DMCA y otras leyes de propiedad intelectual aplicables.</p>
+            <h3>Procedimiento de Notificación</h3>
+            <p>Si cree que su trabajo protegido por derechos de autor ha sido copiado de una manera que constituye una infracción de derechos de autor y es accesible en este sitio web, notifique a nuestro Agente de Derechos de Autor enviando un aviso que incluya la siguiente información:</p>
+            <ul>
+                <li>Una firma física o electrónica de una persona autorizada para actuar en nombre del titular de un derecho exclusivo que supuestamente se ha infringido.</li>
+                <li>Identificación del trabajo protegido por derechos de autor que se alega ha sido infringido, o, si una única notificación cubre múltiples trabajos protegidos por derechos de autor en un solo sitio en línea, una lista representativa de dichos trabajos.</li>
+                <li>Identificación del material que se alega infringe o es objeto de la actividad infractora y que debe eliminarse o cuyo acceso debe deshabilitarse, e información razonablemente suficiente para permitirnos localizar el material.</li>
+                <li>Información razonablemente suficiente para permitirnos contactar a la parte reclamante, como una dirección, número de teléfono y, si está disponible, una dirección de correo electrónico.</li>
+                <li>Una declaración de que la parte reclamante cree de buena fe que el uso del material de la manera reclamada no está autorizado por el titular de los derechos de autor, su agente o la ley.</li>
+                <li>Una declaración de que la información en la notificación es precisa y, bajo pena de perjurio, que la parte reclamante está autorizada a actuar en nombre del titular de un derecho exclusivo que supuestamente se ha infringido.</li>
+            </ul>
+            <p>Para enviar una notificación DMCA, por favor contacte a nuestro equipo legal a través de [Correo Electrónico de Contacto DMCA] o visite nuestra página de contacto.</p>
+        </section>
+
+        <section id="nekoservicesclub" class="doc-section hidden">
+            <h2>NekoServicesClub</h2>
+            <p>El NekoServicesClub es una iniciativa premium de Neko's Seduction, diseñada para ofrecer herramientas y servicios avanzados tanto a desarrolladores como a usuarios. Nuestro objetivo es crear un ecosistema más robusto y personalizado para todos.</p>
+            <h3>Para Desarrolladores</h3>
+            <p>Acceso a APIs de nivel superior, límites de tasa ampliados, entornos de prueba dedicados y soporte prioritario. El Club facilita la creación de bots más potentes, integraciones más profundas y análisis de datos más complejos.</p>
+            <ul>
+                <li>API Keys avanzadas para mayor acceso.</li>
+                <li>Documentación extendida para funcionalidades específicas del Club.</li>
+                <li>Soporte técnico dedicado 24/7.</li>
+                <li>Acceso a programas beta de nuevas funciones.</li>
+            </ul>
+            <h3>Para Usuarios</h3>
+            <p>Beneficios exclusivos como contenido anticipado, experiencia sin anuncios, funciones de personalización avanzadas para el perfil y el feed, insignias de miembro premium y acceso a eventos comunitarios exclusivos.</p>
+            <ul>
+                <li>Contenido premium y acceso anticipado.</li>
+                <li>Experiencia de usuario sin interrupciones ni anuncios.</li>
+                <li>Opciones de personalización únicas para el perfil.</li>
+                <li>Insignias de reconocimiento dentro de la comunidad.</li>
+            </ul>
+            <p>Para más detalles sobre cómo unirse o los beneficios específicos de cada nivel, visite la página de suscripción del NekoServicesClub.</p>
+        </section>
+
+        <section id="terminos" class="doc-section hidden">
+            <h2>Términos y Condiciones de Servicio</h2>
+            <p>Bienvenido a Neko's Seduction. Al acceder o utilizar nuestro sitio web, usted acepta estar sujeto a los siguientes términos y condiciones de servicio. Por favor, léalos detenidamente.</p>
+            <h3>1. Aceptación de los Términos</h3>
+            <p>Al registrarse, acceder o utilizar los servicios de Neko's Seduction, usted acepta los presentes Términos y Condiciones, nuestra Política de Privacidad y todas las leyes y regulaciones aplicables. Si no está de acuerdo con alguno de estos términos, le rogamos no utilice ni acceda a este sitio.</p>
+            <h3>2. Uso de los Servicios</h3>
+            <p>Neko's Seduction es una plataforma de entretenimiento. Usted se compromete a utilizar nuestros servicios únicamente para fines lícitos y de conformidad con estos Términos. Está prohibido el uso indebido de la plataforma, incluyendo la publicación de contenido ilegal, ofensivo o que infrinja los derechos de terceros.</p>
+            <h3>3. Contenido del Usuario</h3>
+            <p>Usted es el único responsable del contenido que publique en la plataforma. Nos reservamos el derecho de eliminar cualquier contenido que consideremos inapropiado o que infrinja nuestros Términos sin previo aviso.</p>
+            <h3>4. Propiedad Intelectual</h3>
+            <p>Todo el contenido original de Neko's Seduction, incluyendo textos, gráficos, logotipos, imágenes y software, es propiedad nuestra o de nuestros licenciantes y está protegido por las leyes de derechos de autor y propiedad intelectual.</p>
+            <h3>5. Limitación de Responsabilidad</h3>
+            <p>Neko's Seduction se proporciona "tal cual" sin garantías de ningún tipo. No seremos responsables de ningún daño directo, indirecto, incidental, especial o consecuente que resulte del uso o la imposibilidad de usar nuestros servicios.</p>
+            <h3>6. Modificaciones de los Términos</h3>
+            <p>Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Cualquier cambio será efectivo inmediatamente después de su publicación en el sitio web. Su uso continuado del sitio después de dichas modificaciones constituirá su aceptación de los nuevos Términos.</p>
+            <p>Para cualquier pregunta sobre nuestros Términos, contáctenos.</p>
+        </section>
+
+        <section id="privacidad" class="doc-section hidden">
+            <h2>Política de Privacidad</h2>
+            <p>En Neko's Seduction, la privacidad de nuestros usuarios es de suma importancia. Esta Política de Privacidad describe cómo recopilamos, utilizamos y protegemos su información personal.</p>
+            <h3>1. Información que Recopilamos</h3>
+            <p>Recopilamos información para proporcionar y mejorar nuestros servicios. Esto incluye:</p>
+            <ul>
+                <li><span class="font-bold">Información de Registro:</span> Cuando se registra en Neko's Seduction, recopilamos información como su nombre de usuario, dirección de correo electrónico y contraseña.</li>
+                <li><span class="font-bold">Información de Uso:</span> Recopilamos datos sobre cómo interactúa con nuestra plataforma, como el contenido que ve, las funciones que utiliza y la duración de sus sesiones.</li>
+                <li><span class="font-bold">Datos Técnicos:</span> Información como su dirección IP, tipo de navegador, sistema operativo y configuraciones del dispositivo.</li>
+            </ul>
+            <h3>2. Cómo Utilizamos su Información</h3>
+            <p>Utilizamos la información recopilada para:</p>
+            <ul>
+                <li>Proporcionar, mantener y mejorar nuestros servicios.</li>
+                <li>Personalizar su experiencia en la plataforma.</li>
+                <li>Comunicarnos con usted sobre actualizaciones y ofertas.</li>
+                <li>Garantizar la seguridad de la plataforma y prevenir el fraude.</li>
+                <li>Cumplir con nuestras obligaciones legales.</li>
+            </ul>
+            <h3>3. Compartir su Información</h3>
+            <p>No compartimos su información personal con terceros, excepto en las siguientes circunstancias:</p>
+            <ul>
+                <li>Con su consentimiento explícito.</li>
+                <li>Para fines legales, como responder a citaciones o solicitudes gubernamentales.</li>
+                <li>Con proveedores de servicios que nos ayudan a operar la plataforma, siempre bajo acuerdos de confidencialidad.</li>
+            </ul>
+            <h3>4. Seguridad de Datos</h3>
+            <p>Implementamos medidas de seguridad robustas, incluyendo encriptación, firewalls y monitoreo constante, para proteger su información contra accesos no autorizados, divulgación, alteración o destrucción.</p>
+            <h3>5. Sus Derechos</h3>
+            <p>Usted tiene derecho a acceder, corregir o eliminar su información personal. También puede oponerse al procesamiento de sus datos o solicitar restricciones en su uso. Para ejercer estos derechos, por favor contáctenos a través de [Correo Electrónico de Contacto de Privacidad].</p>
+            <h3>6. Cambios a esta Política</h3>
+            <p>Podemos actualizar nuestra Política de Privacidad periódicamente. Le notificaremos cualquier cambio publicando la nueva política en esta página. Se recomienda revisar esta política regularmente.</p>
+            <p>Al utilizar Neko's Seduction, usted acepta la recopilación y el uso de información de acuerdo con esta política.</p>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const docSections = document.querySelectorAll('.doc-section');
+
+            // Función para activar una sección
+            function activateSection(targetId) {
+                // Desactivar todos los ítems del sidebar
+                sidebarItems.forEach(item => item.classList.remove('active'));
+                // Desactivar todas las secciones de contenido
+                docSections.forEach(section => section.classList.remove('active-content', 'hidden'));
+
+                // Activar el ítem del sidebar correspondiente
+                const activeSidebarItem = document.querySelector(`.sidebar-item[data-target="${targetId}"]`);
+                if (activeSidebarItem) {
+                    activeSidebarItem.classList.add('active');
+                }
+
+                // Activar la sección de contenido correspondiente
+                const activeDocSection = document.getElementById(targetId);
+                if (activeDocSection) {
+                    activeDocSection.classList.add('active-content');
+                }
+
+                // Asegurar que las secciones no activas estén ocultas
+                docSections.forEach(section => {
+                    if (!section.classList.contains('active-content')) {
+                        section.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Añadir event listeners a los ítems del sidebar
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetId = item.dataset.target;
+                    activateSection(targetId);
+                });
+            });
+
+            // Activar la primera sección por defecto al cargar la página
+            if (sidebarItems.length > 0) {
+                const initialTargetId = sidebarItems[0].dataset.target;
+                activateSection(initialTargetId);
+            }
+        });
+    </script>
+</body>
+</html>

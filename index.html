@@ -1,1 +1,553 @@
-<h1>hola</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neko's Seduction</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Define la fuente Inter y un fondo oscuro para el cuerpo */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #05070a; /* Fondo ultra oscuro */
+            color: #e0e6eb; /* Color de texto claro */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden; /* Evitar scroll horizontal */
+            position: relative; /* Para animaciones de fondo */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Canvas para la animación del océano */
+        #oceanCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3; /* Detrás de todo el contenido */
+            opacity: 0.7; /* Opacidad para que el contenido sea legible */
+        }
+
+        /* Animación de pulsación para el icono de red */
+        @keyframes pulse-icon {
+            0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 0px rgba(0, 255, 0, 0)); }
+            50% { transform: scale(1.15); opacity: 0.8; filter: drop-shadow(0 0 25px rgba(0, 255, 0, 1)); }
+            100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 0px rgba(0, 255, 0, 0)); }
+        }
+        .animate-pulse-icon {
+            animation: pulse-icon 3.5s infinite ease-in-out;
+        }
+
+        /* Estilos para las tarjetas de contenido (Glassmorphism sutil) */
+        .content-card {
+            background-color: rgba(18, 24, 32, 0.7); /* Fondo semi-transparente */
+            backdrop-filter: blur(8px); /* Efecto de desenfoque */
+            border: 1px solid rgba(40, 48, 61, 0.6); /* Borde más translúcido */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); /* Sombra más profunda y difusa */
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .content-card:hover {
+            transform: translateY(-15px); /* Levantamiento más pronunciado */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(167, 139, 250, 0.3); /* Sombra con brillo */
+        }
+
+        /* Estilo para botones PRIMARIOS (Register, Explora Ahora, Suscribirse) */
+        .btn-primary {
+            background: linear-gradient(90deg, #a78bfa 0%, #db2777 50%, #a78bfa 100%); /* Degradado morado-rosa-morado */
+            background-size: 300% 300%; /* Más grande para el movimiento */
+            color: white; /* Color de texto blanco */
+            font-weight: 800; /* Extra bold */
+            padding: 0.8rem 2.5rem; /* Ajustado para ser más pequeño */
+            border-radius: 9999px; /* Fuerza la forma de píldora */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4); /* Sombra inicial */
+            position: relative;
+            overflow: hidden;
+            font-size: 1.125rem; /* text-lg */
+            letter-spacing: 0.05em; /* tracking-wider */
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); /* Transición suave y elástica */
+            outline: none; /* Elimina el contorno de enfoque por defecto */
+        }
+        .btn-primary:hover {
+            background-position: 100% 0; /* Mueve el degradado completamente */
+            box-shadow: 0 0 35px rgba(167, 139, 250, 0.8), 0 0 70px rgba(219, 39, 119, 0.8); /* Doble brillo más intenso */
+            transform: scale(1.08); /* Escala más pequeña al hover */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+        .btn-primary:active {
+            transform: scale(0.95); /* Pequeña pulsación al hacer clic */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5); /* Sombra de presión */
+        }
+        .btn-primary i {
+            transition: transform 0.4s ease-out; /* Transición para el icono */
+            font-size: 1em; /* Asegura que el icono sea del tamaño del texto del botón */
+        }
+        .btn-primary:hover i.fa-arrow-right {
+            transform: translateX(6px); /* Desplaza la flecha */
+        }
+        .btn-primary:hover i.fa-paper-plane {
+            transform: rotate(-15deg) translateY(-3px); /* Gira y levanta el avión */
+        }
+
+        /* Estilo para botones SECUNDARIOS (Login) */
+        .btn-secondary {
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 50%, #3b82f6 100%); /* Degradado azul-cian-azul */
+            background-size: 300% 300%;
+            color: white; /* Color de texto blanco */
+            font-weight: 800; /* Extra bold */
+            padding: 0.8rem 2.5rem; /* Ajustado para ser más pequeño */
+            border-radius: 9999px; /* Fuerza la forma de píldora */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4); /* Sombra inicial */
+            position: relative;
+            overflow: hidden;
+            font-size: 1.125rem; /* text-lg */
+            letter-spacing: 0.05em; /* tracking-wider */
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            outline: none; /* Elimina el contorno de enfoque por defecto */
+        }
+        .btn-secondary:hover {
+            background-position: 100% 0;
+            box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 0 70px rgba(6, 182, 212, 0.8);
+            transform: scale(1.08); /* Escala más pequeña al hover */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+        .btn-secondary:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* Animación de entrada de las secciones (usado con Intersection Observer) */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(60px); /* Más desplazamiento inicial */
+            transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Transición más larga y suave */
+        }
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Estilos para el hero section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(219, 39, 119, 0.2) 0%, rgba(76, 29, 149, 0.2) 100%);
+            border-bottom: 1px solid rgba(45, 55, 72, 0.5);
+            position: relative;
+            box-shadow: inset 0 -10px 30px rgba(0,0,0,0.5); /* Sombra interna para profundidad */
+            z-index: -1; /* Asegura que esté por encima del canvas pero debajo del contenido principal */
+        }
+
+        /* Animación del título principal en el hero */
+        .hero-title-glow {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.7), 0 0 40px rgba(255, 255, 255, 0.5);
+            animation: text-glow 3s infinite alternate ease-in-out;
+        }
+        @keyframes text-glow {
+            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3); }
+            100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.6); }
+        }
+
+        /* Overlay para el modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Asegura que esté en la parte superior */
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .custom-alert-modal {
+            background-color: #121820; /* Fondo del modal oscuro */
+            border: 1px solid #30363d;
+            border-radius: 16px; /* Más redondeado */
+            padding: 50px; /* Más padding */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9); /* Sombra más fuerte */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; /* Más espacio */
+            max-width: 500px; /* Más ancho */
+            width: 90%;
+            color: #e0e6eb;
+            text-align: center;
+            animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-80px) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .custom-alert-modal button {
+            background-color: #238636;
+            color: white;
+            padding: 18px 35px; /* Más grande */
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.3em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .custom-alert-modal button:hover {
+            background-color: #2ea043;
+            transform: scale(1.08);
+        }
+
+        /* Scroll to top button */
+        #scrollToTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #a78bfa, #db2777); /* Degradado del primary btn */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            font-size: 1.8em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+            z-index: 998; /* Asegura que esté en la parte superior */
+            opacity: 0;
+            pointer-events: none;
+        }
+        #scrollToTopBtn.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) rotate(0deg);
+        }
+        #scrollToTopBtn:hover {
+            background: linear-gradient(45deg, #db2777, #a78bfa);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(167, 139, 250, 0.4);
+        }
+        #scrollToTopBtn:active {
+            transform: scale(0.9) rotate(-5deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas para el fondo animado del océano -->
+    <canvas id="oceanCanvas"></canvas>
+
+    <!-- Encabezado de la página -->
+    <header class="bg-gray-950 p-4 shadow-2xl border-b border-gray-800 relative z-10">
+        <div class="container mx-auto flex justify-between items-center py-3">
+            <!-- Título del sitio web -->
+            <h1 class="text-5xl md:text-6xl font-extrabold text-pink-500 tracking-wide leading-tight drop-shadow-lg">Neko's Seduction</h1>
+            <!-- Botones de registro e inicio de sesión -->
+            <div class="flex space-x-6">
+                <button onclick="location.href='#'" class="btn-primary">
+                    Registrarse
+                </button>
+                <button onclick="location.href='#'" class="btn-secondary">
+                    Iniciar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sección Hero -->
+    <section class="hero-section text-center py-32 md:py-40 px-6 fade-in-up relative z-10">
+        <div class="container mx-auto max-w-5xl">
+            <h2 class="text-6xl md:text-7xl font-extrabold text-white leading-tight mb-8 drop-shadow-lg hero-title-glow">
+                Tu Centro de <br><span class="text-pink-400">Entretenimiento Digital</span> Definitivo
+            </h2>
+            <p class="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
+                Sumérgete en un universo de contenido exclusivo, conecta con una comunidad global vibrante y experimenta el futuro del entretenimiento en línea, con una seguridad y rendimiento sin igual.
+            </p>
+            <button onclick="location.href='#'" class="btn-primary">
+                ¡Explora Ahora! <i class="fas fa-arrow-right ml-3"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Contenido principal de la página -->
+    <main class="container mx-auto p-10 flex-grow relative z-10">
+        <!-- Sección de colaboradores -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-40 fade-in-up">
+            <!-- Tarjeta de imagen a la izquierda -->
+            <div class="content-card rounded-3xl overflow-hidden p-10 flex justify-center items-center h-auto border-opacity-70">
+                <img src="1750836335284.png" alt="Imagen de Neko's Seduction Team" class="rounded-2xl w-full h-auto object-cover border border-gray-700 shadow-2xl">
+            </div>
+            <!-- Texto de colaboradores y enlace a la derecha -->
+            <div class="text-xl leading-relaxed text-gray-200">
+                <h2 class="text-5xl font-bold text-pink-400 mb-10 flex items-center">
+                    <i class="fas fa-users-cog text-4xl mr-4 text-purple-400"></i> Nuestros Talentos: <br>Colaboradores y Programadores
+                </h2>
+                <p class="mb-8">
+                    En Neko's Seduction, el corazón de nuestra innovación reside en nuestro excepcional equipo. Buscamos continuamente mentes brillantes y apasionadas para impulsar el desarrollo de nuestro ecosistema digital. Si tienes experiencia en <span class="font-bold text-white">conexiones a bases de datos escalables</span>, <span class="font-bold text-white">arquitectura de servidores de alto rendimiento</span>, <span class="font-bold text-white">desarrollo frontend intuitivo</span> o <span class="font-bold text-white">sistemas backend robustos</span>, ¡eres el talento que buscamos!
+                </p>
+                <p class="mb-10">
+                    Conoce más sobre la dedicación de nuestro equipo y los estándares de seguridad y desarrollo que nos rigen en nuestra
+                    <a href="https://example.com/dmca-documentation" target="_blank" class="text-blue-400 hover:text-blue-500 underline font-extrabold transition duration-300 ease-in-out text-xl">
+                        documentación de DMCA
+                    </a>.
+                </p>
+                <!-- Icono de conexión con animación y descripción -->
+                <div class="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-10 mt-16 bg-gray-800 p-10 rounded-3xl border border-gray-700 shadow-3xl bg-opacity-70 backdrop-filter backdrop-blur-md">
+                    <i class="fa-solid fa-network-wired text-7xl text-green-400 animate-pulse-icon flex-shrink-0 drop-shadow-xl"></i>
+                    <div class="flex flex-col text-center md:text-left">
+                        <p id="connectionText" class="text-gray-300 text-3xl font-extrabold mb-4">Conexiones Robustas y Seguras</p>
+                        <p class="text-gray-400 text-lg leading-relaxed">Nuestra infraestructura de vanguardia garantiza una experiencia fluida, protegida y sin interrupciones para todos nuestros usuarios, manteniendo siempre la integridad de sus datos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección "¿Qué es Neko's Seduction?" -->
+        <section class="content-card p-20 rounded-3xl mb-40 text-center fade-in-up">
+            <h2 class="text-5xl font-bold text-pink-400 mb-14 flex items-center justify-center">
+                <i class="fas fa-info-circle text-4xl mr-6 text-pink-400"></i> ¿Qué es <span class="text-white">Neko's Seduction</span>?
+            </h2>
+            <p class="text-xl leading-relaxed text-gray-300 max-w-5xl mx-auto">
+                Neko's Seduction es la plataforma de entretenimiento de <span class="font-bold text-white">vanguardia</span> donde la creatividad florece y el contenido cobra vida. Aquí, puedes explorar un universo ilimitado de contenido vibrante publicado por nuestra comunidad global o disfrutar de las producciones exclusivas de nuestro sitio. Nos enorgullece ofrecer un entorno digital inigualable, blindado con <span class="font-bold text-white">protección avanzada contra bots</span>, un robusto <span class="font-bold text-white">WAF ruleset</span> para una seguridad inquebrantable, y la potencia de <span class="font-bold text-white">BitBucket</span> para un control de versiones impecable y <span class="font-bold text-white">CDN</span> (Content Delivery Network) para una entrega de contenido ultrarrápida a nivel mundial. ¡Sumérgete en una experiencia sin límites!
+            </p>
+        </section>
+
+        <!-- Sección "NekoServicesClub" -->
+        <section class="content-card p-20 rounded-3xl mb-40 text-center fade-in-up">
+            <h2 class="text-5xl font-bold text-purple-400 mb-14 flex items-center justify-center">
+                <i class="fas fa-handshake text-4xl mr-6 text-purple-400"></i> NekoServicesClub
+            </h2>
+            <p class="text-xl leading-relaxed text-gray-300 max-w-5xl mx-auto">
+                El <span class="font-bold text-white">NekoServicesClub</span> es nuestra iniciativa exclusiva, diseñada para potenciar tu interacción con la plataforma. Ofrecemos una suite de servicios avanzados, <span class="font-bold text-white">especialmente pensados para programadores</span>, que buscan integrar y automatizar funcionalidades, como la búsqueda de contenido programática, el desarrollo de bots personalizados o la integración fluida con nuestras APIs. Además, brindamos <span class="font-bold text-white">servicios premium y herramientas exclusivas</span> para nuestros usuarios regulares, elevando su experiencia y permitiéndoles sacar el máximo provecho de todo lo que Neko's Seduction tiene para ofrecer. ¡Únete al club y desbloquea un nuevo nivel de posibilidades!
+            </p>
+        </section>
+
+        <!-- Sección de Llamada a la Acción / Newsletter -->
+        <section class="content-card p-20 rounded-3xl mb-40 text-center bg-purple-900 bg-opacity-50 border-purple-700 shadow-3xl fade-in-up">
+            <h2 class="text-5xl font-bold text-white mb-10">No te Pierdas Nada</h2>
+            <p class="text-xl leading-relaxed text-purple-200 mb-12 max-w-4xl mx-auto">
+                Sé el primero en enterarte de nuevas publicaciones, eventos exclusivos y actualizaciones importantes de Neko's Seduction. ¡Tu privacidad es nuestra prioridad!
+            </p>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8">
+                <input type="email" placeholder="Tu correo electrónico" class="flex-grow max-w-xl p-6 rounded-xl bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:ring-4 focus:ring-purple-400 focus:border-transparent text-xl shadow-inner">
+                <button class="btn-primary">
+                    Suscribirse <i class="fas fa-paper-plane ml-3"></i>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-950 p-10 shadow-inner mt-auto border-t border-gray-800 relative z-10">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+            <!-- Copyright -->
+            <div class="mb-8 md:mb-0 text-xl text-gray-400 font-medium">
+                &copy; 2025 Neko's Seduction TM. Todos los derechos reservados.
+            </div>
+            <!-- Redes sociales -->
+            <div class="flex space-x-8">
+                <a href="#" target="_blank" aria-label="YouTube" class="text-gray-400 hover:text-red-600 transition duration-400 ease-in-out transform hover:scale-125 hover:rotate-6 drop-shadow-xl">
+                    <i class="fab fa-youtube text-4xl"></i>
+                </a>
+                <a href="#" target="_blank" aria-label="TikTok" class="text-gray-400 hover:text-blue-400 transition duration-400 ease-in-out transform hover:scale-125 hover:-rotate-6 drop-shadow-xl">
+                    <i class="fab fa-tiktok text-4xl"></i>
+                </a>
+                <a href="#" target="_blank" aria-label="Twitter" class="text-gray-400 hover:text-blue-500 transition duration-400 ease-in-out transform hover:scale-125 hover:rotate-6 drop-shadow-xl">
+                    <i class="fab fa-twitter text-4xl"></i>
+                </a>
+                <a href="#" target="_blank" aria-label="Patreon" class="text-gray-400 hover:text-orange-500 transition duration-400 ease-in-out transform hover:scale-125 hover:-rotate-6 drop-shadow-xl">
+                    <i class="fab fa-patreon text-4xl"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botón "Scroll to Top" -->
+    <button id="scrollToTopBtn" aria-label="Volver arriba">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Función para simular alert() con un modal personalizado para una mejor UX
+        function showCustomAlert(message, type = 'info') {
+            const existingModal = document.querySelector('.modal-overlay');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'modal-overlay';
+
+            const modal = document.createElement('div');
+            modal.className = 'custom-alert-modal';
+
+            const messageText = document.createElement('p');
+            messageText.innerText = message;
+            messageText.style.fontSize = '1.4em';
+            messageText.style.fontWeight = '600';
+
+            const closeButton = document.createElement('button');
+            closeButton.innerText = 'OK';
+            closeButton.onclick = () => modalOverlay.remove();
+
+            if (type === 'success') {
+                closeButton.style.backgroundColor = '#238636';
+            } else if (type === 'error') {
+                closeButton.style.backgroundColor = '#e33e3e';
+            } else {
+                closeButton.style.backgroundColor = '#3b82f6';
+            }
+
+            modal.appendChild(messageText);
+            modal.appendChild(closeButton);
+            modalOverlay.appendChild(modal);
+            document.body.appendChild(modalOverlay);
+        }
+
+        // Función para copiar texto al portapapeles (mantenida por si acaso se decide añadir una funcionalidad similar en el futuro)
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const text = element.innerText;
+                const tempInput = document.createElement('textarea');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    showCustomAlert('¡Texto copiado al portapapeles!', 'success');
+                } catch (err) {
+                    console.error('No se pudo copiar el texto: ', err);
+                    showCustomAlert('Error al copiar el texto.', 'error');
+                }
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        // Intersection Observer para animaciones al desplazar
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.fade-in-up');
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 // Cuando el 10% del elemento es visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Dejar de observar una vez que se ha animado
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Lógica para el botón "Scroll to Top"
+            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) { // Mostrar el botón después de 300px de scroll
+                    scrollToTopBtn.classList.add('show');
+                } else {
+                    scrollToTopBtn.classList.remove('show');
+                }
+            });
+
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth' // Desplazamiento suave
+                });
+            });
+        });
+
+        // Lógica de la animación del océano en el canvas
+        const canvas = document.getElementById('oceanCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let waves = [];
+        let waveCount = 8; // Número de líneas de olas
+        let waveSpeed = 0.0005; // Velocidad de las olas
+        let waveAmplitude = 80; // Amplitud máxima de las olas
+        let waveLength = 0.008; // Longitud de onda
+
+        // Clase para representar una ola individual
+        class Wave {
+            constructor(yOffset, color, speedOffset, amplitudeOffset) {
+                this.yOffset = yOffset;
+                this.color = color;
+                this.speedOffset = speedOffset;
+                this.amplitudeOffset = amplitudeOffset;
+            }
+
+            draw(time) {
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height / 2 + this.yOffset + Math.sin(time * waveSpeed + this.speedOffset) * (waveAmplitude * this.amplitudeOffset));
+
+                for (let x = 0; x < canvas.width; x += 5) {
+                    const y = canvas.height / 2 + this.yOffset + Math.sin(x * waveLength + time * waveSpeed + this.speedOffset) * (waveAmplitude * this.amplitudeOffset);
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.lineTo(canvas.width, canvas.height); // Conectar al fondo derecho
+                ctx.lineTo(0, canvas.height);           // Conectar al fondo izquierdo
+                ctx.closePath();
+
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Inicializar olas
+        function initWaves() {
+            waves = [];
+            for (let i = 0; i < waveCount; i++) {
+                const yOffset = i * (canvas.height / waveCount) - canvas.height / 2; // Distribuir olas verticalmente
+                const color = `rgba(${Math.floor(20 + i * 10)}, ${Math.floor(50 + i * 15)}, ${Math.floor(100 + i * 20)}, 0.3)`; // Colores azules más oscuros a claros
+                const speedOffset = i * 0.5;
+                const amplitudeOffset = 1 - (i / waveCount) * 0.5; // Amplitud disminuye con la profundidad
+
+                waves.push(new Wave(yOffset, color, speedOffset, amplitudeOffset));
+            }
+        }
+
+        // Bucle de animación
+        function animate(time) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar el canvas
+
+            // Dibujar cada ola
+            waves.forEach(wave => wave.draw(time));
+
+            requestAnimationFrame(animate);
+        }
+
+        // Ajustar el tamaño del canvas al redimensionar la ventana
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initWaves(); // Reiniciar olas al cambiar el tamaño
+        }
+
+        // Event listeners
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = function() {
+            resizeCanvas(); // Ajustar el tamaño inicial
+            animate(0); // Iniciar la animación
+        };
+    </script>
+</body>
+</html>
